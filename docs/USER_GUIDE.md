@@ -1,4 +1,4 @@
-﻿# Mood Journal — User Guide
+# Mood Journal — User Guide
 
 Welcome to **Mood Journal**! This guide covers everything you need to know about using the application, understanding your mood heatmap, mastering the streak system, and getting the most out of automatic sentiment tracking.
 

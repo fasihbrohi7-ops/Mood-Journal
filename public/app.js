@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Mood Journal — Frontend Application
  * Handles API interaction, 53x7 GitHub-style heatmap generation,
  * live character count, sentiment updates, streak counters, and popover modals.

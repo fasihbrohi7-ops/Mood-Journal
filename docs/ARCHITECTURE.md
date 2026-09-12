@@ -1,4 +1,4 @@
-﻿# Mood Journal — Technical Architecture & Design Document
+# Mood Journal — Technical Architecture & Design Document
 
 This document describes the internal architecture, design decisions, data models, and performance characteristics of **Mood Journal**.
 

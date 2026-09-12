@@ -1,4 +1,4 @@
-﻿# Mood Journal — Production Deployment Guide
+# Mood Journal — Production Deployment Guide
 
 This guide walks you through deploying **Mood Journal** to production using **Vercel** and **Upstash Redis**.
 

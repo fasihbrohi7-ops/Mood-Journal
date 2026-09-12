@@ -1,4 +1,4 @@
-﻿# Mood Journal 🌿
+# Mood Journal 🌿
 
 > **Effortless emotional tracking powered by sentiment analysis & visual 371-day GitHub-style calendar heatmap.**
 

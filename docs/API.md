@@ -1,4 +1,4 @@
-﻿# Mood Journal — REST API Reference
+# Mood Journal — REST API Reference
 
 This document provides complete documentation for the Mood Journal REST API.
 
