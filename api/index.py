@@ -27,17 +27,30 @@ class VercelMiddleware:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
+        # 1. Extract __path parameter passed from Vercel rewrite
+        query_string = environ.get('QUERY_STRING', '')
+        if '__path=' in query_string:
+            from urllib.parse import parse_qs, urlencode
+            params = parse_qs(query_string, keep_blank_values=True)
+            if '__path' in params and params['__path']:
+                target = params.pop('__path')[0].strip('/')
+                environ['QUERY_STRING'] = urlencode(params, doseq=True)
+                environ['PATH_INFO'] = f'/{target}'
+
+        # 2. Handle matched headers if provided
         matched_path = environ.get('HTTP_X_MATCHED_PATH') or environ.get('HTTP_X_FORWARDED_URI')
         if matched_path:
-            clean_path = matched_path.split('?')[0]
-            if clean_path and clean_path != '/':
-                environ['PATH_INFO'] = clean_path
+            clean_path = matched_path.split('?')[0].strip('/')
+            if clean_path and clean_path not in ('', 'api/index.py', 'api/index'):
+                environ['PATH_INFO'] = f'/{clean_path}'
 
+        # 3. Strip function prefix if present in PATH_INFO
         path_info = environ.get('PATH_INFO', '')
         for prefix in ('/api/index.py', '/api/index'):
             if path_info.startswith(prefix):
                 remainder = path_info[len(prefix):]
-                environ['PATH_INFO'] = remainder if remainder else '/'
+                if remainder:
+                    environ['PATH_INFO'] = remainder
                 break
 
         return self.wsgi_app(environ, start_response)
@@ -314,14 +327,9 @@ def health():
 
 @app.route('/')
 def index():
-    debug_info = {
-        'PATH_INFO': request.environ.get('PATH_INFO'),
-        'RAW_URI': request.environ.get('RAW_URI'),
-        'REQUEST_URI': request.environ.get('REQUEST_URI'),
-        'QUERY_STRING': request.environ.get('QUERY_STRING'),
-        'headers': {k: str(v) for k, v in request.headers.items()}
-    }
-    return jsonify(debug_info), 200
+    if os.path.exists(os.path.join(PUBLIC_DIR, 'index.html')):
+        return send_from_directory(PUBLIC_DIR, 'index.html')
+    return jsonify({'message': 'Mood Journal API is running. Place index.html in public/'}), 200
 
 @app.route('/<path:path>', methods=['GET'])
 def serve_static(path):
