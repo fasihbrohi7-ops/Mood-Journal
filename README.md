@@ -1,19 +1,20 @@
 # Mood Journal 🌿
 
-> **Effortless emotional tracking powered by sentiment analysis & visual 371-day GitHub-style calendar heatmap.**
+> **Effortless emotional tracking in English & Roman Urdu powered by sentiment analysis & visual 371-day GitHub-style calendar heatmap.**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Language](https://img.shields.io/badge/languages-English%20%7C%20Roman%20Urdu-green.svg)](#-bilingual-support)
 [![Flask 3.0+](https://img.shields.io/badge/framework-Flask-black.svg)](https://palletsprojects.com/p/flask/)
 [![Deployment](https://img.shields.io/badge/deployed%20on-Vercel-black.svg)](https://vercel.com/)
 [![Database](https://img.shields.io/badge/datastore-Upstash%20Redis-red.svg)](https://upstash.com/)
-[![Tests](https://img.shields.io/badge/tests-8%20passed-brightgreen.svg)](#-automated-testing)
+[![Tests](https://img.shields.io/badge/tests-9%20passed-brightgreen.svg)](#-automated-testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
 ## 📌 Executive Summary
 
-Mood Journal is a lightweight, zero-friction daily reflection web application. Instead of forcing users to manually select arbitrary 1–5 star ratings, pick from confusing emoji pickers, or tag feelings, Mood Journal lets users simply **write how they feel in plain text**. 
+Mood Journal is a lightweight, zero-friction daily reflection web application. Instead of forcing users to manually select arbitrary 1–5 star ratings, pick from confusing emoji pickers, or tag feelings, Mood Journal lets users simply **write how they feel in plain English, Roman Urdu, or mixed code-switching**. 
 
 The app automatically evaluates emotional valence using continuous NLP sentiment scoring and transforms a user's journaling history into an interactive, color-coded **371-day calendar heatmap** (53 weeks × 7 days), inspired by GitHub’s contribution graph.
 
@@ -25,8 +26,8 @@ For in-depth guides, visit the documentation directory:
 
 | Document | Description |
 |---|---|
-| 📖 **[User Guide](docs/USER_GUIDE.md)** | Step-by-step instructions for journaling, understanding heatmap buckets, streak rules, writing tips for sentiment analysis, and FAQ. |
-| 🏛 **[Technical Architecture](docs/ARCHITECTURE.md)** | System design, VADER vs TextBlob analysis, Redis schema, dual-mode storage abstraction, and streak algorithm. |
+| 📖 **[User Guide](docs/USER_GUIDE.md)** | Step-by-step instructions for journaling, Roman Urdu writing guide, understanding heatmap buckets, streak rules, and FAQ. |
+| 🏛 **[Technical Architecture](docs/ARCHITECTURE.md)** | System design, Roman Urdu & English NLP engine, Redis schema, dual-mode storage abstraction, and streak algorithm. |
 | 📡 **[REST API Reference](docs/API.md)** | Complete OpenAPI-style documentation with endpoints, payloads, HTTP status codes, and `curl` examples. |
 | 🚀 **[Production Deployment Guide](docs/DEPLOYMENT.md)** | End-to-end instructions for deploying to Vercel with Upstash Redis, configuring environment variables, and smoke testing. |
 
@@ -35,6 +36,7 @@ For in-depth guides, visit the documentation directory:
 ## ✨ Key Features
 
 - ✍️ **Frictionless Daily Journaling**: Min 1 to max 1,000 characters. No manual sliders or tagging.
+- 🇵🇰 **Bilingual English & Roman Urdu Understanding**: Native understanding of Roman Urdu words (*zabardast, behtareen, acha, kharab, udaas, dard, sukoon, thak gaya*), intensifiers (*bohot, intehai*), negations (*nahi, mat*), and code-switching (*"Today was good lekin baad me bohot thak gaya"*).
 - 🤖 **Automated Sentiment Analysis**: Evaluates text on a continuous scale from `-1.0` (very negative) to `+1.0` (very positive) using pure-Python VADER NLP.
 - 🎨 **Visual 371-Day Heatmap**: 53 columns × 7 rows GitHub-style calendar grid with dynamic month headers and day-of-week indicators.
 - 🏷 **5-Bucket Emotional Palette**:

@@ -192,7 +192,7 @@ It evaluates:
    - *"The meeting was long, but we made great progress!"* &rarr; Overall **Positive**.
    - *"The food was good, but the service was terrible."* &rarr; Overall **Negative**.
 
-### Real-world Examples & Scores
+### Real-world Examples & Scores (English)
 
 | What You Write | Approximate Score | Bucket | Why |
 |---|---|---|---|
@@ -201,6 +201,20 @@ It evaluates:
 | *"Routine Tuesday. Grocery shopping, washed the car, paid electricity bill."* | `0.00` | **Neutral** 😐 | Factual, routine activities without strong emotional valence. |
 | *"Stuck in traffic for 2 hours and spilled my lunch. Really annoying day."* | `-0.48` | **Negative** 🙁 | Negative terms (`stuck`, `annoying`) intensified by `Really`. |
 | *"Devastated by bad news from home. Feeling completely exhausted and hopeless."* | `-0.82` | **Very Negative** 💔 | Strong negative emotional words (`devastated`, `hopeless`). |
+
+### 🇵🇰 Roman Urdu Journaling Guide
+
+Mood Journal natively understands **Roman Urdu** (Urdu written in the Latin alphabet) as well as mixed **code-switching** ("Urdish"):
+
+| Roman Urdu Entry | Approximate Score | Bucket | Why It Works |
+|---|---|---|---|
+| *"Aaj ka din bohot behtareen aur khushgawar guzra! Sab kaam ho gaye."* | `+0.86` | **Very Positive** 🌟 | High-valence words (`behtareen`, `khushgawar`) boosted by `bohot`. |
+| *"Zabardast kaam hua aaj, doston ke sath maza aa gaya!"* | `+0.83` | **Very Positive** 🌟 | Expressive celebration words (`zabardast`, `maza`). |
+| *"Subah utha, chai pi aur kaam shuru kiya."* | `0.00` | **Neutral** 😐 | Everyday routine without emotional charge. |
+| *"Tabiyat kharab hai aur sar me bohot dard hai."* | `-0.79` | **Very Negative** 💔 | Negative physical/emotional states (`kharab`, `dard`, `bohot`). |
+| *"Aaj bilkul acha din nahi tha, bohot udaas hoon."* | `-0.77` | **Very Negative** 💔 | Postfix negation (`acha din nahi`) properly inverts positive valence. |
+| *"Kaam mushkil tha lekin team ne zabardast support kiya."* | `+0.87` | **Positive** 😊 | Contrastive conjunction (`lekin`) gives priority to positive outcome. |
+| *"Meeting boring thi lekin overall din theek tha."* | `+0.39` | **Positive** 😊 | Mixed code-switching with mild positive resolution. |
 
 ---
 

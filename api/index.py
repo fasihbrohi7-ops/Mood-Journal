@@ -3,8 +3,6 @@ import os
 import re
 from datetime import datetime, timezone, timedelta
 from flask import Flask, request, jsonify, send_from_directory
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-
 # Load environment variables if dotenv is present
 try:
     from dotenv import load_dotenv
@@ -13,8 +11,10 @@ try:
 except ImportError:
     pass
 
-# Initialize Sentiment Analyzer
-analyzer = SentimentIntensityAnalyzer()
+try:
+    from api.sentiment import analyze_sentiment, get_mood_bucket
+except ImportError:
+    from sentiment import analyze_sentiment, get_mood_bucket
 
 # Determine public folder path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -140,9 +140,10 @@ def create_or_update_entry():
 
     now_iso = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    polarity = analyzer.polarity_scores(text)['compound']
-    score = round(float(polarity), 2)
-    bucket = get_mood_bucket(score)
+    analysis = analyze_sentiment(text)
+    score = analysis['score']
+    bucket = analysis['bucket']
+    language = analysis['language']
 
     try:
         existing_raw = storage.hget('entries', target_date)
@@ -157,6 +158,7 @@ def create_or_update_entry():
             'text': text,
             'score': score,
             'bucket': bucket,
+            'language': language,
             'created_at': created_at,
             'updated_at': now_iso
         }
@@ -167,7 +169,8 @@ def create_or_update_entry():
             'date': target_date,
             'text': text,
             'score': score,
-            'bucket': bucket
+            'bucket': bucket,
+            'language': language
         }), 200
 
     except Exception as e:
@@ -217,7 +220,8 @@ def get_entry_by_date(date):
             'date': item.get('date', date),
             'text': item.get('text', ''),
             'score': item.get('score', 0.0),
-            'bucket': item.get('bucket', 'neutral')
+            'bucket': item.get('bucket', 'neutral'),
+            'language': item.get('language', 'English')
         }), 200
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve entry: {str(e)}'}), 500

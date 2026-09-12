@@ -180,3 +180,32 @@ def test_static_routes(client):
 
     res_js = client.get('/app.js')
     assert res_js.status_code == 200
+
+def test_roman_urdu_understanding(client):
+    # 1. Positive Roman Urdu
+    res_pos = client.post('/api/entry', json={
+        'text': 'Aaj ka din bohot behtareen aur khushgawar guzra! Sab kaam waqt par ho gaye.'
+    })
+    assert res_pos.status_code == 200
+    data_pos = res_pos.get_json()
+    assert data_pos['score'] > 0.4
+    assert data_pos['bucket'] in ('positive', 'very_positive')
+    assert data_pos['language'] == 'Roman Urdu'
+
+    # 2. Negative Roman Urdu with postfix negation
+    res_neg = client.post('/api/entry', json={
+        'text': 'Aaj bilkul acha din nahi tha, bohot udaas hoon aur sar me dard hai.'
+    })
+    assert res_neg.status_code == 200
+    data_neg = res_neg.get_json()
+    assert data_neg['score'] < -0.3
+    assert data_neg['bucket'] in ('negative', 'very_negative')
+    assert data_neg['language'] == 'Roman Urdu'
+
+    # 3. Mixed / Code-switching
+    res_mix = client.post('/api/entry', json={
+        'text': 'Morning was good lekin baad me office me bohot tension thi.'
+    })
+    assert res_mix.status_code == 200
+    data_mix = res_mix.get_json()
+    assert 'language' in data_mix

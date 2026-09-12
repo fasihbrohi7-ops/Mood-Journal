@@ -42,6 +42,7 @@
     modalRelativeDate: document.getElementById('modalRelativeDate'),
     modalScoreBadge: document.getElementById('modalScoreBadge'),
     modalBucketBadge: document.getElementById('modalBucketBadge'),
+    modalLangBadge: document.getElementById('modalLangBadge'),
     modalEntryText: document.getElementById('modalEntryText'),
     modalEditBtn: document.getElementById('modalEditBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
@@ -356,11 +357,17 @@
       elements.modalBucketBadge.className = 'modal-badge modal-bucket-badge';
       elements.modalBucketBadge.style.backgroundColor = 'var(--cell-empty)';
       elements.modalBucketBadge.style.color = 'var(--text-muted)';
+      if (elements.modalLangBadge) elements.modalLangBadge.classList.add('hidden');
       elements.modalEntryText.textContent = dateISO === state.todayStr
         ? 'You have not written a journal entry for today yet. Use the form above to log your thoughts!'
         : 'No journal entry was logged for this day.';
       openModal();
       return;
+    }
+
+    if (elements.modalLangBadge) {
+      elements.modalLangBadge.classList.remove('hidden');
+      elements.modalLangBadge.textContent = entry.language || 'English';
     }
 
     // Load full entry details if text is not already cached
@@ -441,7 +448,8 @@
         date: result.date,
         text: result.text,
         score: result.score,
-        bucket: result.bucket
+        bucket: result.bucket,
+        language: result.language
       });
 
       // Update cell directly in heatmap
@@ -469,7 +477,8 @@
       elements.todayMoodPill.textContent = `${getBucketEmoji(bucket)} ${formatBucketName(bucket)} (${result.score >= 0 ? '+' : ''}${result.score})`;
 
       elements.btnText.textContent = 'Update Mood';
-      showMessage(`Mood recorded: ${formatBucketName(bucket)} (Score: ${result.score >= 0 ? '+' : ''}${result.score})`, 'success');
+      const langNotice = result.language ? ` • ${result.language}` : '';
+      showMessage(`Mood recorded: ${formatBucketName(bucket)} (Score: ${result.score >= 0 ? '+' : ''}${result.score}${langNotice})`, 'success');
 
     } catch (err) {
       console.error('Submission error:', err);
