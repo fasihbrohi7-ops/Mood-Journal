@@ -22,6 +22,28 @@ PUBLIC_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'public'))
 
 app = Flask(__name__, static_folder=PUBLIC_DIR, static_url_path='')
 
+class VercelMiddleware:
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        matched_path = environ.get('HTTP_X_MATCHED_PATH') or environ.get('HTTP_X_FORWARDED_URI')
+        if matched_path:
+            clean_path = matched_path.split('?')[0]
+            if clean_path and clean_path != '/':
+                environ['PATH_INFO'] = clean_path
+
+        path_info = environ.get('PATH_INFO', '')
+        for prefix in ('/api/index.py', '/api/index'):
+            if path_info.startswith(prefix):
+                remainder = path_info[len(prefix):]
+                environ['PATH_INFO'] = remainder if remainder else '/'
+                break
+
+        return self.wsgi_app(environ, start_response)
+
+app.wsgi_app = VercelMiddleware(app.wsgi_app)
+
 class StorageManager:
     def __init__(self):
         self.redis_url = os.environ.get('UPSTASH_REDIS_REST_URL')
@@ -115,6 +137,7 @@ def add_cors_headers(response):
     return response
 
 @app.route('/api/entry', methods=['POST', 'OPTIONS'])
+@app.route('/entry', methods=['POST', 'OPTIONS'])
 def create_or_update_entry():
     if request.method == 'OPTIONS':
         return ('', 204)
@@ -177,6 +200,7 @@ def create_or_update_entry():
         return jsonify({'error': f'Failed to persist entry: {str(e)}'}), 500
 
 @app.route('/api/entries', methods=['GET'])
+@app.route('/entries', methods=['GET'])
 def get_entries():
     try:
         days_param = request.args.get('days', default=371, type=int)
@@ -206,6 +230,7 @@ def get_entries():
         return jsonify({'error': f'Failed to retrieve entries: {str(e)}'}), 500
 
 @app.route('/api/entry/<date>', methods=['GET'])
+@app.route('/entry/<date>', methods=['GET'])
 def get_entry_by_date(date):
     if not re.match(r'^\d{4}-\d{2}-\d{2}$', date):
         return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
@@ -227,6 +252,7 @@ def get_entry_by_date(date):
         return jsonify({'error': f'Failed to retrieve entry: {str(e)}'}), 500
 
 @app.route('/api/streak', methods=['GET'])
+@app.route('/streak', methods=['GET'])
 def get_streak():
     try:
         raw_entries = storage.hgetall('entries')
@@ -278,6 +304,7 @@ def get_streak():
         return jsonify({'error': f'Failed to compute streak: {str(e)}'}), 500
 
 @app.route('/api/health', methods=['GET'])
+@app.route('/health', methods=['GET'])
 def health():
     return jsonify({
         'status': 'healthy',
@@ -291,11 +318,24 @@ def index():
         return send_from_directory(PUBLIC_DIR, 'index.html')
     return jsonify({'message': 'Mood Journal API is running. Place index.html in public/'}), 200
 
-@app.route('/<path:path>')
+@app.route('/<path:path>', methods=['GET'])
 def serve_static(path):
-    if os.path.exists(os.path.join(PUBLIC_DIR, path)):
+    if path.startswith('api/') or path in ('entry', 'entries', 'streak', 'health'):
+        return jsonify({'error': 'Resource not found', 'path': request.path}), 404
+    file_path = os.path.join(PUBLIC_DIR, path)
+    if os.path.isfile(file_path):
         return send_from_directory(PUBLIC_DIR, path)
-    return send_from_directory(PUBLIC_DIR, 'index.html')
+    if os.path.isfile(os.path.join(PUBLIC_DIR, 'index.html')):
+        return send_from_directory(PUBLIC_DIR, 'index.html')
+    return jsonify({'error': 'Resource not found', 'path': request.path}), 404
+
+@app.errorhandler(405)
+def handle_405(e):
+    return jsonify({'error': f'Method {request.method} not allowed for {request.path}.', 'path': request.path}), 405
+
+@app.errorhandler(404)
+def handle_404(e):
+    return jsonify({'error': f'Endpoint not found: {request.path}', 'path': request.path}), 404
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
