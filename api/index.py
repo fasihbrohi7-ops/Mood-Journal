@@ -314,9 +314,14 @@ def health():
 
 @app.route('/')
 def index():
-    if os.path.exists(os.path.join(PUBLIC_DIR, 'index.html')):
-        return send_from_directory(PUBLIC_DIR, 'index.html')
-    return jsonify({'message': 'Mood Journal API is running. Place index.html in public/'}), 200
+    debug_info = {
+        'PATH_INFO': request.environ.get('PATH_INFO'),
+        'RAW_URI': request.environ.get('RAW_URI'),
+        'REQUEST_URI': request.environ.get('REQUEST_URI'),
+        'QUERY_STRING': request.environ.get('QUERY_STRING'),
+        'headers': {k: str(v) for k, v in request.headers.items()}
+    }
+    return jsonify(debug_info), 200
 
 @app.route('/<path:path>', methods=['GET'])
 def serve_static(path):
